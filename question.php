@@ -265,8 +265,8 @@ class qtype_javaunittest_question extends question_graded_automatically {
                 if ( $this->feedbacklevel_assertstring == 1) {
                     $matches = array();
                     $hiddematches = array();
-                    $found = preg_match_all ( '/(java\.lang\.AssertionError|org\.junit\.ComparisonFailure): ([^<>]*)(expected:<(.*)> but was:<(.*)>|$)/mUs', $output, $matches );
-                    $hidden = preg_match_all ( '/(java\.lang\.AssertionError|org\.junit\.ComparisonFailure)$/mUs', $output, $hiddenmatches );
+                    $found = preg_match_all ( '/(java\.lang\.AssertionError|org\.junit\.ComparisonFailure|junit\.framework\.AssertionFailedError): ([^<>]*)(expected:<(.*)> but was:<(.*)>|$)/mUs', $output, $matches );
+                    $hidden = preg_match_all ( '/(java\.lang\.AssertionError|org\.junit\.ComparisonFailure|junit\.framework\.AssertionFailedError)$/mUs', $output, $hiddenmatches );
                     foreach ( $matches[2] as $asserstr ) 
                         if ( trim ( $asserstr ) == "Hide" )
                             $hidden++;
