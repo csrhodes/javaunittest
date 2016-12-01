@@ -14,6 +14,8 @@
 defined ( 'MOODLE_INTERNAL' ) || die ();
 require_once ( dirname ( __FILE__ ) . '/lib.php' );
 require_once (dirname(__FILE__) . '/executors/executor.php');
+require_once (dirname(__FILE__) . '/executors/junit4.php');
+
 /**
  * Represents a javaunittest question.
  */
@@ -170,7 +172,7 @@ class qtype_javaunittest_question extends question_graded_automatically {
         $feedback = '';
         $cfg_plugin = get_config ( 'qtype_javaunittest' );
 
-        $executor = new qtype_javaunittest_question_executor($this);
+        $executor = new qtype_javaunittest_question_junit4_executor($this);
         
         if ( empty ( $cfg_plugin->remoteserver ) ) {
             $ret = $executor->local_execute ( $response );
