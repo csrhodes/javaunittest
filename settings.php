@@ -72,6 +72,14 @@ if ( $ADMIN->fulltree ) {
             new admin_setting_heading ( 'local_execution', 
                     get_string ( 'local_execution_heading', 'qtype_javaunittest' ), 
                     get_string ( 'local_execution_desc', 'qtype_javaunittest' ) ) );
+
+    $settings->add(
+        new admin_setting_configmulticheckbox(
+            'qtype_javaunittest/executors', get_string('executors', 'qtype_javaunittest'), '',
+            [], array('junit4' => 'Java (JUnit4)', 'libcppunit' => 'C++ (libcppunit)')));
+
+    $settings->add(
+        new admin_setting_heading('junit4', 'JUnit4', 'Configuration for the JUnit4 executor.'));
     
     $settings->add ( 
             new admin_setting_configexecutable ( 'qtype_javaunittest/pathjavac', 

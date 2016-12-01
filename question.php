@@ -21,6 +21,7 @@ require_once (dirname(__FILE__) . '/executors/junit4.php');
  */
 class qtype_javaunittest_question extends question_graded_automatically {
     public $responseformat = 'plain';
+    public $executor;
     public $responsefieldlines;
     public $givencode;
     public $testclassname;
@@ -172,7 +173,17 @@ class qtype_javaunittest_question extends question_graded_automatically {
         $feedback = '';
         $cfg_plugin = get_config ( 'qtype_javaunittest' );
 
-        $executor = new qtype_javaunittest_question_junit4_executor($this);
+        // FIXME: this is a temporary exception while developing so
+        // that we don't actually crash the PHP process: `new
+        // $executorClass' when the class doesn't exist does bad
+        // things, and this is in the middle of a database
+        // transaction.
+        if ($this->executor != 'junit4') {
+            throw new Exception('qtype_javaunittest: executor is not junit4');
+        }
+        $executorClass = 'qtype_javaunittest_question_' . $this->executor . '_executor';
+
+        $executor = new $executorClass($this);
         
         if ( empty ( $cfg_plugin->remoteserver ) ) {
             $ret = $executor->local_execute ( $response );

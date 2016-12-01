@@ -41,6 +41,7 @@ class qtype_javaunittest extends question_type {
     public function extra_question_fields() {
         return array (
                 'qtype_javaunittest_options',
+                'executor',
                 'responsefieldlines',
                 'givencode',
                 'testclassname',

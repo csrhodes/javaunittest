@@ -26,8 +26,20 @@ class qtype_javaunittest_edit_form extends question_edit_form {
         
         $definitionoptions = $this->_customdata['definitionoptions'];
         $attachmentoptions = $this->_customdata['attachmentoptions'];
-  
+
+        $cfg_plugin = get_config('qtype_javaunittest');
+
         // -------------------------- general options
+        $executors = array();
+        // KLUDGE: not sure if this is lolphp or lolmoodle, but the
+        // idea that a multiselect configuration item should be stored
+        // as CSV, and that that CSV should be directly exposed to the
+        // developer, is hilarious.
+        foreach (str_getcsv($cfg_plugin->executors) as $executor) {
+            $executors[$executor] = $executor;
+        }
+        $mform->addElement('select', 'executor', get_string('executor', 'qtype_javaunittest'), $executors);
+
         $mform->addElement ( 'select', 'responsefieldlines', get_string ( 'responsefieldlines', 'qtype_javaunittest' ), 
                 $qtype->response_sizes () );
         $mform->setDefault ( 'responsefieldlines', 20 );
@@ -40,7 +52,7 @@ class qtype_javaunittest_edit_form extends question_edit_form {
         $mform->setType ( 'givencode', PARAM_RAW );
         $mform->addHelpButton ( 'givencode', 'givencode', 'qtype_javaunittest' );
         $mform->addElement ( 'static', '', '', qtype_javaunittest_generateJsBy ( '#id_givencode', 20 ) );
-        
+
         $mform->addElement ( 'textarea', 'testclassname', get_string ( 'testclassname', 'qtype_javaunittest' ), 
                 array (
                         'cols' => 110,
