@@ -100,7 +100,11 @@ if ( $ADMIN->fulltree ) {
     $settings->add ( 
             new admin_setting_configfile ( 'qtype_javaunittest/pathhamcrest', 
                     get_string ( 'pathhamcrest', 'qtype_javaunittest' ), '', '/usr/share/java/hamcrest-core.jar' ) );
-    
+
+    $settings->add (
+        new admin_setting_configfile ( 'qtype_javaunittest/pathjunitxmlrunner',
+                                       get_string ( 'pathjunitxmlrunner', 'qtype_javaunittest' ), '', dirname(__FILE__) . '/jars/JUnitXmlFormatter-1.0.jar' ) );
+
     $settings->add ( 
             new admin_setting_configfile ( 'qtype_javaunittest/pathpolicy', 
                     get_string ( 'pathpolicy', 'qtype_javaunittest' ), '', 

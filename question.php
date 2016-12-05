@@ -236,6 +236,73 @@ class qtype_javaunittest_question extends question_graded_automatically {
                 $feedback = get_string ( 'RSE', 'qtype_javaunittest' ) . '<br><br>';
                 $feedback .= '<pre>' . htmlspecialchars ( $ret['message'] ) . '</pre>';
             }
+        } else if ($ret['junitxml']) {
+            $reader = new XMLReader();
+            $reader->xml($ret['junitxml']);
+
+            $ntests = 0;
+            $nfails = 0;
+            $nerrors = 0;
+
+            $tests = array();
+
+            while ($reader->read()) {
+                if ($reader->nodeType == XMLReader::END_ELEMENT) {
+                    continue;
+                }
+
+                if ($reader->name == 'testsuite') {
+                    $nt = $reader->getAttribute('tests');
+                    $nf = $reader->getAttribute('failures');
+                    $ne = $reader->getAttribute('errors');
+
+                    $ntests += $nt != NULL ? intval($nt, 10) : 0;
+                    $nfails += $nf != NULL ? intval($nf, 10) : 0;
+                    $nerrors += $ne != NULL ? intval($ne, 10) : 0;
+                }
+
+                if ($reader->name == 'testcase') {
+                    $name = $reader->getAttribute('classname') . '.' . $reader->getAttribute('name');
+                    $depth = $reader->depth;
+                    while ($reader->read()) {
+                        if($reader->nodeType == XMLReader::END_ELEMENT) {
+                            if ($reader->depth != $depth) continue;
+                            if (!array_key_exists($name, $tests)) {
+                                $tests[$name] = ['passed'];
+                            }
+                            break;
+                        }
+                        if($reader->name == 'failure' || $reader->name == 'error') {
+                            $tests[$name] = ['failed', $reader->getAttribute('message'), $reader->readString()];
+                        }
+                        if($reader->name == 'skipped') {
+                            $tests[$name] = ['skipped'];
+                        }
+                    }
+                }
+            }
+
+            if ($ntests == 0) {
+                $feedback = get_string('JE', 'qtype_javaunittest');
+            } else {
+                $fraction = 1 - round(($nfails + $nerrors)/$ntests, 2);
+                ksort($tests);
+
+                $feedback = "<table>\n<thead><tr><th>test name</th><th>result</th><th>feedback</th></tr></thead>\n<tbody>\n";
+                foreach ($tests as $name => $status) {
+                    $row = "<tr><td>" . htmlspecialchars($name) . "</td><td>" . $status[0] . "</td><td>" . ($status[0] == 'failed' ? htmlspecialchars($status[1]) : "") . "</td></tr>\n";
+                    $feedback .= $row;
+                }
+
+                $feedback .= "</tbody>\n</table>\n";
+
+                foreach ($tests as $name => $status) {
+                    if($status[0] == 'failed') {
+                        $feedback .= "<p>Test <b>" . htmlspecialchars($name) . "</b> failed:</p>";
+                        $feedback .= "<pre>" . htmlspecialchars($status[2]) . "</pre>";
+                    }
+                }
+            }
         } else {
             
             // the JUnit-execution-output returns always a String in the first line

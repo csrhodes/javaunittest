@@ -202,8 +202,8 @@ class qtype_javaunittest_question_junit4_executor extends qtype_javaunittest_que
             // run test
             $command = $cfg_plugin->pathjava . ' -Xmx' . $cfg_plugin->memory_xmx .
                      'm -Djava.security.manager=default -Djava.security.policy=' . $cfg_plugin->pathpolicy . ' -cp ' .
-                     $cfg_plugin->pathjunit . ':' . $cfg_plugin->pathhamcrest . ':' . $temp_folder .
-                     ' org.junit.runner.JUnitCore ' . $this->question->testclassname;
+                     $cfg_plugin->pathjunit . ':' . $cfg_plugin->pathhamcrest . ':' . $cfg_plugin->pathjunitxmlrunner . ':' . $temp_folder .
+                     ' -Dorg.schmant.task.junit4.target=' . $temp_folder . '/test.xml uk.ac.gold.doc.junitXmlFormatter.Runner ' . $this->question->testclassname;
 
             $output = '';
             $testruntime = 0;
@@ -216,6 +216,7 @@ class qtype_javaunittest_question_junit4_executor extends qtype_javaunittest_que
                 $fd_logfile = fopen ( $logfile, 'w' );
                 if ( $fd_logfile === false )
                     throw new Exception ( 'qtype_javaunittest: could not create logfile' );
+                fwrite($fd_logfile, $command . "\n");
                 fwrite ( $fd_logfile, $output );
                 fclose ( $fd_logfile );
             }
@@ -230,10 +231,11 @@ class qtype_javaunittest_question_junit4_executor extends qtype_javaunittest_que
             }
 
             return array (
-                    'junitoutput' => $output,
-                    'error' => false,
-                    'compiletime' => $compiletime,
-                    'testruntime' => $testruntime
+                'junitxml' => file_get_contents($temp_folder . '/test.xml'),
+                'junitoutput' => $output,
+                'error' => false,
+                'compiletime' => $compiletime,
+                'testruntime' => $testruntime
             );
         } catch ( Exception $e ) {
             if ( !$cfg_plugin->debug_nocleanup )
